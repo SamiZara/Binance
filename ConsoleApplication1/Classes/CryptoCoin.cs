@@ -27,7 +27,7 @@ namespace ConsoleApplication1.Classes
         public string Created { get; set; }
         public string MarketDisplayMarketNameName { get; set; }
         public Thread thread;
-        public double[] data = new double[2160];
+        public double[] data = new double[2170];
         public int currentIndex;
         public string min1, min3, min5, min10, min15, min30, hour1, hour2, hour3, hour6;
 
@@ -103,6 +103,7 @@ namespace ConsoleApplication1.Classes
             Calculate1HourChange();
             Calculate2HourChange();
             Calculate3HourChange();
+            Calculate6HourChange();
         }
 
         public double Calculate1MinChange()
@@ -170,6 +171,7 @@ namespace ConsoleApplication1.Classes
 
         public double Calculate6HourChange()
         {
+            Console.WriteLine(Constants.hour6InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000));
             double hour6PercentageDifference = ((data[currentIndex - 1] - data[(MathHelper.Mod(currentIndex - 1 - (Constants.hour6InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000)), data.Length))]) / data[(MathHelper.Mod(currentIndex - 1 - (Constants.hour6InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000)), data.Length))] * 100);
             hour6 = ((data[currentIndex - 1] - data[(MathHelper.Mod(currentIndex - 1 - (Constants.hour6InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000)), data.Length))]) / data[(MathHelper.Mod(currentIndex - 1 - (Constants.hour6InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000)), data.Length))] * 100).ToString("0.00");
             return hour6PercentageDifference;

@@ -9,7 +9,6 @@ namespace ConsoleApplication1.Classes
     public class AverageCryptoCoin
     {
 
-        private int currentIndex;
         public string min1, min3, min5, min10, min15, min30, hour1, hour2, hour3, hour6, MarketName;
         public static AverageCryptoCoin Instance;
 
@@ -37,12 +36,16 @@ namespace ConsoleApplication1.Classes
         {
             double count = 0;
             double sum = 0;
-            foreach(KeyValuePair<string,CryptoCoin> coin in BitTrex.instance.coinList)
+            foreach (KeyValuePair<string, CryptoCoin> coin in BitTrex.instance.coinList)
             {
                 if (coin.Value.currentIndex != 0)
                 {
-                    sum += coin.Value.Calculate1MinChange();
-                    count++;
+                    double percent = coin.Value.Calculate1MinChange();
+                    if (percent > -10000 && percent < 10000)
+                    {
+                        sum += percent;
+                        count++;
+                    }
                 }
             }
             min1 = (sum / count).ToString("0.00");
@@ -56,8 +59,12 @@ namespace ConsoleApplication1.Classes
             {
                 if (coin.Value.currentIndex != 0)
                 {
-                    sum += coin.Value.Calculate3MinChange();
-                    count++;
+                    double percent = coin.Value.Calculate3MinChange();
+                    if (percent > -10000 && percent < 10000)
+                    {
+                        sum += percent;
+                        count++;
+                    }
                 }
             }
             min3 = (sum / count).ToString("0.00");
@@ -71,8 +78,12 @@ namespace ConsoleApplication1.Classes
             {
                 if (coin.Value.currentIndex != 0)
                 {
-                    sum += coin.Value.Calculate5MinChange();
-                    count++;
+                    double percent = coin.Value.Calculate5MinChange();
+                    if (percent > -10000 && percent < 10000)
+                    {
+                        sum += percent;
+                        count++;
+                    }
                 }
             }
             min5 = (sum / count).ToString("0.00");
@@ -86,8 +97,12 @@ namespace ConsoleApplication1.Classes
             {
                 if (coin.Value.currentIndex != 0)
                 {
-                    sum += coin.Value.Calculate10MinChange();
-                    count++;
+                    double percent = coin.Value.Calculate10MinChange();
+                    if (percent > -10000 && percent < 10000)
+                    {
+                        sum += percent;
+                        count++;
+                    }
                 }
             }
             min10 = (sum / count).ToString("0.00");
@@ -101,8 +116,12 @@ namespace ConsoleApplication1.Classes
             {
                 if (coin.Value.currentIndex != 0)
                 {
-                    sum += coin.Value.Calculate15MinChange();
-                    count++;
+                    double percent = coin.Value.Calculate15MinChange();
+                    if (percent > -10000 && percent < 10000)
+                    {
+                        sum += percent;
+                        count++;
+                    }
                 }
             }
             min15 = (sum / count).ToString("0.00");
@@ -116,8 +135,12 @@ namespace ConsoleApplication1.Classes
             {
                 if (coin.Value.currentIndex != 0)
                 {
-                    sum += coin.Value.Calculate30MinChange();
-                    count++;
+                    double percent = coin.Value.Calculate30MinChange();
+                    if (percent > -10000 && percent < 10000)
+                    {
+                        sum += percent;
+                        count++;
+                    }
                 }
             }
             min30 = (sum / count).ToString("0.00");
@@ -131,8 +154,12 @@ namespace ConsoleApplication1.Classes
             {
                 if (coin.Value.currentIndex != 0)
                 {
-                    sum += coin.Value.Calculate1HourChange();
-                    count++;
+                    double percent = coin.Value.Calculate1HourChange();
+                    if (percent > -10000 && percent < 10000)
+                    {
+                        sum += percent;
+                        count++;
+                    }
                 }
             }
             hour1 = (sum / count).ToString("0.00");
@@ -146,8 +173,12 @@ namespace ConsoleApplication1.Classes
             {
                 if (coin.Value.currentIndex != 0)
                 {
-                    sum += coin.Value.Calculate2HourChange();
-                    count++;
+                    double percent = coin.Value.Calculate2HourChange();
+                    if (percent > -10000 && percent < 10000)
+                    {
+                        sum += percent;
+                        count++;
+                    }
                 }
             }
             hour2 = (sum / count).ToString("0.00");
@@ -161,8 +192,12 @@ namespace ConsoleApplication1.Classes
             {
                 if (coin.Value.currentIndex != 0)
                 {
-                    sum += coin.Value.Calculate3HourChange();
-                    count++;
+                    double percent = coin.Value.Calculate3HourChange();
+                    if (percent > -10000 && percent < 10000)
+                    {
+                        sum += percent;
+                        count++;
+                    }
                 }
             }
             hour3 = (sum / count).ToString("0.00");
@@ -176,8 +211,12 @@ namespace ConsoleApplication1.Classes
             {
                 if (coin.Value.currentIndex != 0)
                 {
-                    sum += coin.Value.Calculate6HourChange();
-                    count++;
+                    double percent = coin.Value.Calculate6HourChange();
+                    if (percent > -10000 && percent < 10000)
+                    {
+                        sum += percent;
+                        count++;
+                    }
                 }
             }
             hour6 = (sum / count).ToString("0.00");
