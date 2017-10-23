@@ -17,12 +17,14 @@ namespace ConsoleApplication1
 {
     public partial class BitTrex : Form
     {
-        const double minimumVolume = 20;
+        const double minimumVolume = 150;
         const string targetMarket = "BTC";
-        Dictionary<string, CryptoCoin> coinList;
+        public Dictionary<string, CryptoCoin> coinList;
         public static BitTrex instance;
         public delegate void AddRowDelegate(TableDataRow row);
         private bool isCoinPriceUpdating = false;
+        private bool isCurrenciesUpdating = true;
+        private AverageCryptoCoin avgCoin;
 
         public BitTrex()
         {
@@ -59,6 +61,10 @@ namespace ConsoleApplication1
                     if (rowTemp.Cells[0].Value.ToString().Equals(searchValue))
                     {
                         int index = dataGridView1.Rows.IndexOf(rowTemp);
+                        if(row.name == "AllMarket")
+                        {
+                            dataGridView1.Rows[index].DefaultCellStyle.BackColor = Color.Gold;
+                        } 
                         dataGridView1.Rows[index].Cells["Column1"].Value = row.name;
                         dataGridView1.Rows[index].Cells["Column2"].Value = Convert.ToDouble(row.min1);
                         dataGridView1.Rows[index].Cells["Column3"].Value = Convert.ToDouble(row.min3);
@@ -70,11 +76,12 @@ namespace ConsoleApplication1
                         dataGridView1.Rows[index].Cells["Column9"].Value = Convert.ToDouble(row.hour2);
                         dataGridView1.Rows[index].Cells["Column10"].Value = Convert.ToDouble(row.hour3);
                         dataGridView1.Rows[index].Cells["Column11"].Value = Convert.ToDouble(row.hour6);
-
+                        
                         if (dataGridView1.SortOrder == SortOrder.Ascending)
                             dataGridView1.Sort(dataGridView1.SortedColumn, ListSortDirection.Ascending);
                         else if(dataGridView1.SortOrder == SortOrder.Descending)
-                            dataGridView1.Sort(dataGridView1.SortedColumn, ListSortDirection.Descending);
+                            dataGridView1.Sort(dataGridView1.SortedColumn, ListSortDirection.Descending);       
+                         
                         return;
                     }
                 }
@@ -85,6 +92,8 @@ namespace ConsoleApplication1
                 dataGridView1.Sort(dataGridView1.SortedColumn, ListSortDirection.Ascending);
             else if (dataGridView1.SortOrder == SortOrder.Descending)
                 dataGridView1.Sort(dataGridView1.SortedColumn, ListSortDirection.Descending);
+            
+            
             /*if (!dataGridView1.Rows.(row))
             {
 
@@ -95,6 +104,7 @@ namespace ConsoleApplication1
         {
             coinList = new Dictionary<string, CryptoCoin>();
             instance = this;
+            avgCoin = new AverageCryptoCoin("AllMarket");
             /* string html = string.Empty;
              string url = @"https://bittrex.com/api/v1.1/market/getopenorders?apikey=52d1be040242428a912602350cbcecf5&nonce=1";
 
@@ -131,9 +141,10 @@ namespace ConsoleApplication1
             {
                 while (isCoinPriceUpdating)
                 {
-                    Console.WriteLine("Waitinf for coin prices to be updated");
+                    Console.WriteLine("Waiting for coin prices to be updated");
                 }
                 Console.WriteLine("Updating currencies");
+                isCurrenciesUpdating = true;
                 MarketData data = GetMarketSummaries();
                 foreach (CryptoCoin coin in data.result)
                 {
@@ -152,20 +163,43 @@ namespace ConsoleApplication1
                     {
                         if (coinList.ContainsKey(coin.MarketName) && coin.BaseVolume < minimumVolume * 0.8f)
                         {
-                            coinList[coin.MarketName].StopThread();
                             coinList.Remove(coin.MarketName);
                         }
                     }
 
                 }
+                isCurrenciesUpdating = false;
                 Thread.Sleep(600000);
             }
         }
 
+        public void RemoveCurrency(string marketName)
+        {
+            coinList.Remove(marketName);
+        }
+
         private void UpdateCoinPrices()
         {
-
+            while (isCurrenciesUpdating)
+            {
+                Console.WriteLine("Waiting for currencies to be updated");
+            }
+            while (true)
+            {
+                Console.WriteLine("Updating coin prices");
+                isCoinPriceUpdating = true;
+                foreach (KeyValuePair<string, CryptoCoin> coin in coinList)
+                {
+                    Thread coinTick = new Thread(new ThreadStart(coin.Value.Tick));
+                    coinTick.Start();
+                } 
+                isCoinPriceUpdating = false;
+                Thread.Sleep(Constants.tickerIntervalInMilliSeconds);
+                avgCoin.CalculateChangePercentages();
+                avgCoin.PrintPercentages();
+            }
         }
+
 
     }
 }

@@ -52,6 +52,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Classes\AverageCryptoCoin.cs" />
+    <Compile Include="Classes\Constants.cs" />
     <Compile Include="Classes\CryptoCoin.cs" />
     <Compile Include="Classes\CryptoCoinData.cs" />
     <Compile Include="Classes\CryptoCoinTicker.cs" />
@@ -62,6 +63,7 @@
     <Compile Include="BitTrex.Designer.cs">
       <DependentUpon>BitTrex.cs</DependentUpon>
     </Compile>
+    <Compile Include="Classes\MathHelper.cs" />
     <Compile Include="Classes\TableDataRow.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

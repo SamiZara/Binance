@@ -28,7 +28,7 @@ namespace ConsoleApplication1.Classes
         public string MarketDisplayMarketNameName { get; set; }
         public Thread thread;
         public double[] data = new double[2160];
-        private int currentIndex;
+        public int currentIndex;
         public string min1, min3, min5, min10, min15, min30, hour1, hour2, hour3, hour6;
 
         public void StartThread()
@@ -38,48 +38,50 @@ namespace ConsoleApplication1.Classes
             //thread.Start();
         }
 
-        private void Tick()
+        public void Tick()
         {
-                data[MathHelper.Mod(currentIndex, data.Length)] = GetCoinData();
-                currentIndex = MathHelper.Mod(currentIndex, data.Length);
-                currentIndex++;
-                CalculateChangePercentages();
-                PrintPercentages();         
+            double lastPrice = GetCoinData();
+            data[MathHelper.Mod(currentIndex, data.Length)] = lastPrice;
+            currentIndex = MathHelper.Mod(currentIndex, data.Length);
+            currentIndex++;
+            CalculateChangePercentages();
+            PrintPercentages();
         }
 
         public double GetCoinData()
         {
-            bool flag = true;
             string html = string.Empty;
-            while (flag)
+
+            string url = "https://bittrex.com/api/v1.1/public/getticker?market=" + MarketName + "";
+            try
             {
-                flag = false;
-                string url = "https://bittrex.com/api/v1.1/public/getticker?market=" + MarketName + "";              
-                try
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+                using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+                using (Stream stream = response.GetResponseStream())
+                using (StreamReader reader = new StreamReader(stream))
                 {
-                    HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
-                    using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
-                    using (Stream stream = response.GetResponseStream())
-                    using (StreamReader reader = new StreamReader(stream))
-                    {
-                        html = reader.ReadToEnd();
-                    }
+                    html = reader.ReadToEnd();
                 }
-                catch (WebException e)
-                {
-                    Console.WriteLine("Timeout retrying");
-                    flag = true;
-                }
+            }
+            catch (WebException e)
+            {
+                Console.WriteLine("Timeout ");
             }
             //Console.WriteLine(html);
             try
             {
+                if (html == "" || html == null)
+                {
+                    Console.WriteLine("Failed to gather data");
+                    return 0;
+                }
                 CryptoCoinData data = JsonConvert.DeserializeObject<CryptoCoinData>(html);
                 if (data.result != null)
                     return data.result.Last;
                 else
                 {
-                    Console.WriteLine("Failed to read: "+MarketName);
+                    Console.WriteLine("Failed to read: " + MarketName);
+                    BitTrex.instance.RemoveCurrency(MarketName);
                     return 0;
                 }
             }
@@ -90,72 +92,87 @@ namespace ConsoleApplication1.Classes
             }
         }
 
-        public void StopThread()
-        {
-            thread.Abort();
-        }
-
         private void CalculateChangePercentages()
         {
-                Calculate1MinChange();
-                Calculate3MinChange();
-                Calculate5MinChange();
-                Calculate10MinChange();
-                Calculate15MinChange();
-                Calculate30MinChange();
-                Calculate1HourChange();
-                Calculate2HourChange();
-                Calculate3HourChange();
+            Calculate1MinChange();
+            Calculate3MinChange();
+            Calculate5MinChange();
+            Calculate10MinChange();
+            Calculate15MinChange();
+            Calculate30MinChange();
+            Calculate1HourChange();
+            Calculate2HourChange();
+            Calculate3HourChange();
         }
 
-        private void Calculate1MinChange()
+        public double Calculate1MinChange()
         {
+            double min1PercentageDifference = ((data[currentIndex - 1] - data[(MathHelper.Mod(currentIndex - 1 - (Constants.min1InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000)), data.Length))]) / data[(MathHelper.Mod(currentIndex - 1 - (Constants.min1InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000)), data.Length))] * 100);
             min1 = ((data[currentIndex - 1] - data[(MathHelper.Mod(currentIndex - 1 - (Constants.min1InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000)), data.Length))]) / data[(MathHelper.Mod(currentIndex - 1 - (Constants.min1InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000)), data.Length))] * 100).ToString("0.00");
+            return min1PercentageDifference;
         }
 
-        private void Calculate3MinChange()
+        public double Calculate3MinChange()
         {
+            double min3PercentageDifference = ((data[currentIndex - 1] - data[(MathHelper.Mod(currentIndex - 1 - (Constants.min3InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000)), data.Length))]) / data[(MathHelper.Mod(currentIndex - 1 - (Constants.min3InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000)), data.Length))] * 100);
             min3 = ((data[currentIndex - 1] - data[(MathHelper.Mod(currentIndex - 1 - (Constants.min3InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000)), data.Length))]) / data[(MathHelper.Mod(currentIndex - 1 - (Constants.min3InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000)), data.Length))] * 100).ToString("0.00");
+            return min3PercentageDifference;
         }
 
-        private void Calculate5MinChange()
+        public double Calculate5MinChange()
         {
+            double min5PercentageDifference = ((data[currentIndex - 1] - data[(MathHelper.Mod(currentIndex - 1 - (Constants.min5InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000)), data.Length))]) / data[(MathHelper.Mod(currentIndex - 1 - (Constants.min5InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000)), data.Length))] * 100);
             min5 = ((data[currentIndex - 1] - data[(MathHelper.Mod(currentIndex - 1 - (Constants.min5InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000)), data.Length))]) / data[(MathHelper.Mod(currentIndex - 1 - (Constants.min5InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000)), data.Length))] * 100).ToString("0.00");
+            return min5PercentageDifference;
         }
 
-        private void Calculate10MinChange()
+        public double Calculate10MinChange()
         {
+            double min10PercentageDifference = ((data[currentIndex - 1] - data[(MathHelper.Mod(currentIndex - 1 - (Constants.min10InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000)), data.Length))]) / data[(MathHelper.Mod(currentIndex - 1 - (Constants.min10InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000)), data.Length))] * 100);
             min10 = ((data[currentIndex - 1] - data[(MathHelper.Mod(currentIndex - 1 - (Constants.min10InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000)), data.Length))]) / data[(MathHelper.Mod(currentIndex - 1 - (Constants.min10InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000)), data.Length))] * 100).ToString("0.00");
+            return min10PercentageDifference;
         }
 
-        private void Calculate15MinChange()
+        public double Calculate15MinChange()
         {
+            double min15PercentageDifference = ((data[currentIndex - 1] - data[(MathHelper.Mod(currentIndex - 1 - (Constants.min15InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000)), data.Length))]) / data[(MathHelper.Mod(currentIndex - 1 - (Constants.min15InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000)), data.Length))] * 100);
             min15 = ((data[currentIndex - 1] - data[(MathHelper.Mod(currentIndex - 1 - (Constants.min15InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000)), data.Length))]) / data[(MathHelper.Mod(currentIndex - 1 - (Constants.min15InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000)), data.Length))] * 100).ToString("0.00");
+            return min15PercentageDifference;
         }
 
-        private void Calculate30MinChange()
+        public double Calculate30MinChange()
         {
+            double min30PercentageDifference = ((data[currentIndex - 1] - data[(MathHelper.Mod(currentIndex - 1 - (Constants.min30InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000)), data.Length))]) / data[(MathHelper.Mod(currentIndex - 1 - (Constants.min30InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000)), data.Length))] * 100);
             min30 = ((data[currentIndex - 1] - data[(MathHelper.Mod(currentIndex - 1 - (Constants.min30InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000)), data.Length))]) / data[(MathHelper.Mod(currentIndex - 1 - (Constants.min30InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000)), data.Length))] * 100).ToString("0.00");
+            return min30PercentageDifference;
         }
 
-        private void Calculate1HourChange()
+        public double Calculate1HourChange()
         {
+            double hour1PercentageDifference = ((data[currentIndex - 1] - data[(MathHelper.Mod(currentIndex - 1 - (Constants.hour1InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000)), data.Length))]) / data[(MathHelper.Mod(currentIndex - 1 - (Constants.hour1InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000)), data.Length))] * 100);
             hour1 = ((data[currentIndex - 1] - data[(MathHelper.Mod(currentIndex - 1 - (Constants.hour1InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000)), data.Length))]) / data[(MathHelper.Mod(currentIndex - 1 - (Constants.hour1InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000)), data.Length))] * 100).ToString("0.00");
+            return hour1PercentageDifference;
         }
 
-        private void Calculate2HourChange()
+        public double Calculate2HourChange()
         {
+            double hour2PercentageDifference = ((data[currentIndex - 1] - data[(MathHelper.Mod(currentIndex - 1 - (Constants.hour2InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000)), data.Length))]) / data[(MathHelper.Mod(currentIndex - 1 - (Constants.hour2InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000)), data.Length))] * 100);
             hour2 = ((data[currentIndex - 1] - data[(MathHelper.Mod(currentIndex - 1 - (Constants.hour2InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000)), data.Length))]) / data[(MathHelper.Mod(currentIndex - 1 - (Constants.hour2InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000)), data.Length))] * 100).ToString("0.00");
+            return hour2PercentageDifference;
         }
 
-        private void Calculate3HourChange()
+        public double Calculate3HourChange()
         {
+            double hour3PercentageDifference = ((data[currentIndex - 1] - data[(MathHelper.Mod(currentIndex - 1 - (Constants.hour3InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000)), data.Length))]) / data[(MathHelper.Mod(currentIndex - 1 - (Constants.hour3InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000)), data.Length))] * 100);
             hour3 = ((data[currentIndex - 1] - data[(MathHelper.Mod(currentIndex - 1 - (Constants.hour3InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000)), data.Length))]) / data[(MathHelper.Mod(currentIndex - 1 - (Constants.hour3InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000)), data.Length))] * 100).ToString("0.00");
+            return hour3PercentageDifference;
         }
 
-        private void Calculate6HourChange()
+        public double Calculate6HourChange()
         {
+            double hour6PercentageDifference = ((data[currentIndex - 1] - data[(MathHelper.Mod(currentIndex - 1 - (Constants.hour6InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000)), data.Length))]) / data[(MathHelper.Mod(currentIndex - 1 - (Constants.hour6InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000)), data.Length))] * 100);
             hour6 = ((data[currentIndex - 1] - data[(MathHelper.Mod(currentIndex - 1 - (Constants.hour6InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000)), data.Length))]) / data[(MathHelper.Mod(currentIndex - 1 - (Constants.hour6InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000)), data.Length))] * 100).ToString("0.00");
+            return hour6PercentageDifference;
         }
 
 
