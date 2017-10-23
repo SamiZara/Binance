@@ -86,11 +86,11 @@ namespace ConsoleApplication1.Classes
             {
                 if (coin.Value.currentIndex != 0)
                 {
-                    sum += coin.Value.Calculate1MinChange();
+                    sum += coin.Value.Calculate10MinChange();
                     count++;
                 }
             }
-            min1 = (sum / count).ToString("0.00");
+            min10 = (sum / count).ToString("0.00");
         }
 
         private void Calculate15MinChange()
@@ -101,11 +101,11 @@ namespace ConsoleApplication1.Classes
             {
                 if (coin.Value.currentIndex != 0)
                 {
-                    sum += coin.Value.Calculate1MinChange();
+                    sum += coin.Value.Calculate15MinChange();
                     count++;
                 }
             }
-            min1 = (sum / count).ToString("0.00");
+            min15 = (sum / count).ToString("0.00");
         }
 
         private void Calculate30MinChange()
@@ -116,11 +116,11 @@ namespace ConsoleApplication1.Classes
             {
                 if (coin.Value.currentIndex != 0)
                 {
-                    sum += coin.Value.Calculate1MinChange();
+                    sum += coin.Value.Calculate30MinChange();
                     count++;
                 }
             }
-            min1 = (sum / count).ToString("0.00");
+            min30 = (sum / count).ToString("0.00");
         }
 
         private void Calculate1HourChange()
@@ -131,11 +131,11 @@ namespace ConsoleApplication1.Classes
             {
                 if (coin.Value.currentIndex != 0)
                 {
-                    sum += coin.Value.Calculate1MinChange();
+                    sum += coin.Value.Calculate1HourChange();
                     count++;
                 }
             }
-            min1 = (sum / count).ToString("0.00");
+            hour1 = (sum / count).ToString("0.00");
         }
 
         private void Calculate2HourChange()
@@ -146,11 +146,11 @@ namespace ConsoleApplication1.Classes
             {
                 if (coin.Value.currentIndex != 0)
                 {
-                    sum += coin.Value.Calculate1MinChange();
+                    sum += coin.Value.Calculate2HourChange();
                     count++;
                 }
             }
-            min1 = (sum / count).ToString("0.00");
+            hour2 = (sum / count).ToString("0.00");
         }
 
         private void Calculate3HourChange()
@@ -161,11 +161,11 @@ namespace ConsoleApplication1.Classes
             {
                 if (coin.Value.currentIndex != 0)
                 {
-                    sum += coin.Value.Calculate1MinChange();
+                    sum += coin.Value.Calculate3HourChange();
                     count++;
                 }
             }
-            min1 = (sum / count).ToString("0.00");
+            hour3 = (sum / count).ToString("0.00");
         }
 
         private void Calculate6HourChange()
@@ -176,11 +176,11 @@ namespace ConsoleApplication1.Classes
             {
                 if (coin.Value.currentIndex != 0)
                 {
-                    sum += coin.Value.Calculate1MinChange();
+                    sum += coin.Value.Calculate6HourChange();
                     count++;
                 }
             }
-            min1 = (sum / count).ToString("0.00");
+            hour6 = (sum / count).ToString("0.00");
         }
 
         public void PrintPercentages()
