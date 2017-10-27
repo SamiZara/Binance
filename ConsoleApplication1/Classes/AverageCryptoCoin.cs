@@ -30,6 +30,7 @@ namespace ConsoleApplication1.Classes
             Calculate1HourChange();
             Calculate2HourChange();
             Calculate3HourChange();
+            Calculate6HourChange();
         }
 
         private void Calculate1MinChange()

@@ -30,13 +30,7 @@ namespace ConsoleApplication1.Classes
         public double[] data = new double[2170];
         public int currentIndex;
         public string min1, min3, min5, min10, min15, min30, hour1, hour2, hour3, hour6;
-
-        public void StartThread()
-        {
-            Console.WriteLine("Starting coin thread");
-            //thread = new Thread(new ThreadStart(Ticker));
-            //thread.Start();
-        }
+        private DateTime lastNotifyTime = DateTime.Now;
 
         public void Tick()
         {
@@ -110,6 +104,11 @@ namespace ConsoleApplication1.Classes
         {
             double min1PercentageDifference = ((data[currentIndex - 1] - data[(MathHelper.Mod(currentIndex - 1 - (Constants.min1InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000)), data.Length))]) / data[(MathHelper.Mod(currentIndex - 1 - (Constants.min1InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000)), data.Length))] * 100);
             min1 = ((data[currentIndex - 1] - data[(MathHelper.Mod(currentIndex - 1 - (Constants.min1InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000)), data.Length))]) / data[(MathHelper.Mod(currentIndex - 1 - (Constants.min1InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000)), data.Length))] * 100).ToString("0.00");
+            if(min1PercentageDifference > 5 && data[currentIndex - 1] > 0.00000100 && min1PercentageDifference < 200 && DateTime.Now >= lastNotifyTime.AddMinutes(2))
+            {
+                lastNotifyTime = DateTime.Now;
+                BitTrex.instance.NotifyUser(MarketName + " is increased " + min1PercentageDifference + " in 1 min");
+            }
             return min1PercentageDifference;
         }
 
@@ -171,7 +170,6 @@ namespace ConsoleApplication1.Classes
 
         public double Calculate6HourChange()
         {
-            Console.WriteLine(Constants.hour6InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000));
             double hour6PercentageDifference = ((data[currentIndex - 1] - data[(MathHelper.Mod(currentIndex - 1 - (Constants.hour6InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000)), data.Length))]) / data[(MathHelper.Mod(currentIndex - 1 - (Constants.hour6InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000)), data.Length))] * 100);
             hour6 = ((data[currentIndex - 1] - data[(MathHelper.Mod(currentIndex - 1 - (Constants.hour6InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000)), data.Length))]) / data[(MathHelper.Mod(currentIndex - 1 - (Constants.hour6InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000)), data.Length))] * 100).ToString("0.00");
             return hour6PercentageDifference;

@@ -17,13 +17,11 @@ namespace ConsoleApplication1
 {
     public partial class BitTrex : Form
     {
-        const double minimumVolume = 150;
+        const double minimumVolume = 50;
         const string targetMarket = "BTC";
         public Dictionary<string, CryptoCoin> coinList;
         public static BitTrex instance;
         public delegate void AddRowDelegate(TableDataRow row);
-        private bool isCoinPriceUpdating = false;
-        private bool isCurrenciesUpdating = true;
         private AverageCryptoCoin avgCoin;
 
         public BitTrex()
@@ -123,15 +121,21 @@ namespace ConsoleApplication1
         {
             string html = string.Empty;
             string url = "https://bittrex.com/api/v1.1/public/getmarketsummaries";
-
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
-            using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
-            using (Stream stream = response.GetResponseStream())
-            using (StreamReader reader = new StreamReader(stream))
+            try
             {
-                html = reader.ReadToEnd();
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+                using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+                using (Stream stream = response.GetResponseStream())
+                using (StreamReader reader = new StreamReader(stream))
+                {
+                    html = reader.ReadToEnd();
+                }
             }
-
+            catch (WebException e)
+            {
+                Console.WriteLine("Timeout ");
+                return GetMarketSummaries();
+            }
             return JsonConvert.DeserializeObject<MarketData>(html);
         }
 
@@ -139,36 +143,30 @@ namespace ConsoleApplication1
         {
             while (true)
             {
-                while (isCoinPriceUpdating)
-                {
-                    Console.WriteLine("Waiting for coin prices to be updated");
-                }
                 Console.WriteLine("Updating currencies");
-                isCurrenciesUpdating = true;
                 MarketData data = GetMarketSummaries();
-                foreach (CryptoCoin coin in data.result)
+                lock (coinList)
                 {
-                    string[] pair = coin.MarketName.Split('-');
-                    if (coin.BaseVolume > minimumVolume && pair[0] == targetMarket)
+                    foreach (CryptoCoin coin in data.result)
                     {
-                        if (!coinList.ContainsKey(coin.MarketName))
+                        string[] pair = coin.MarketName.Split('-');
+                        if (coin.BaseVolume > minimumVolume && pair[0] == targetMarket)
                         {
-                            //Console.WriteLine("Adding Coin");
-                            //coin.StartThread();
-                            coinList.Add(coin.MarketName, coin);
-                            //Thread.Sleep(1000);
+                            if (!coinList.ContainsKey(coin.MarketName))
+                            {
+                                coinList.Add(coin.MarketName, coin);
+                            }
                         }
-                    }
-                    else
-                    {
-                        if (coinList.ContainsKey(coin.MarketName) && coin.BaseVolume < minimumVolume * 0.8f)
+                        else
                         {
-                            coinList.Remove(coin.MarketName);
+                            if (coinList.ContainsKey(coin.MarketName) && coin.BaseVolume < minimumVolume * 0.8f)
+                            {
+                                coinList.Remove(coin.MarketName);
+                            }
                         }
                     }
 
                 }
-                isCurrenciesUpdating = false;
                 Thread.Sleep(600000);
             }
         }
@@ -180,26 +178,31 @@ namespace ConsoleApplication1
 
         private void UpdateCoinPrices()
         {
-            while (isCurrenciesUpdating)
-            {
-                Console.WriteLine("Waiting for currencies to be updated");
-            }
             while (true)
             {
                 Console.WriteLine("Updating coin prices");
-                isCoinPriceUpdating = true;
-                foreach (KeyValuePair<string, CryptoCoin> coin in coinList)
+                lock (coinList)
                 {
-                    Thread coinTick = new Thread(new ThreadStart(coin.Value.Tick));
-                    coinTick.Start();
-                } 
-                isCoinPriceUpdating = false;
+                    foreach (KeyValuePair<string, CryptoCoin> coin  in coinList)
+                    {
+                        Thread coinTick = new Thread(new ThreadStart(coin.Value.Tick));
+                        coinTick.Start();
+                    }
+                }
                 Thread.Sleep(Constants.tickerIntervalInMilliSeconds);
                 avgCoin.CalculateChangePercentages();
                 avgCoin.PrintPercentages();
             }
         }
 
+        public void NotifyUser(string message)
+        {
+            NotifyIcon notifyIcon = new NotifyIcon();
+            notifyIcon.Visible = true;
+            notifyIcon.Icon = SystemIcons.Application;
+            notifyIcon.BalloonTipText = message;
+            notifyIcon.ShowBalloonTip(10000);
+        }
 
     }
 }
