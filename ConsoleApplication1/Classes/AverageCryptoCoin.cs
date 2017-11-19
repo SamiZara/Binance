@@ -9,7 +9,7 @@ namespace ConsoleApplication1.Classes
     public class AverageCryptoCoin
     {
 
-        public string min1, min3, min5, min10, min15, min30, hour1, hour2, hour3, hour6, MarketName;
+        public string min1, min3, min5, min10, min15, min30, hour1, hour2, hour3, hour6, volatility15Min, MarketName;
         public static AverageCryptoCoin Instance;
 
         public AverageCryptoCoin(string MarketName)
@@ -223,9 +223,9 @@ namespace ConsoleApplication1.Classes
             hour6 = (sum / count).ToString("0.00");
         }
 
-        public void PrintPercentages()
+        public void PrintData()
         {
-            TableDataRow row = new TableDataRow(MarketName, min1, min3, min5, min10, min15, min30, hour1, hour2, hour3, hour6);
+            TableDataRow row = new TableDataRow(MarketName, min1, min3, min5, min10, min15, min30, hour1, hour2, hour3, hour6, volatility15Min);
             BitTrex.instance.InsertRow(row);
             /*if (Convert.ToDouble(min1) > 2)
             {

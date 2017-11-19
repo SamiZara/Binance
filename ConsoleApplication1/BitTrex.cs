@@ -62,7 +62,8 @@ namespace ConsoleApplication1
                         if(row.name == "AllMarket")
                         {
                             dataGridView1.Rows[index].DefaultCellStyle.BackColor = Color.Gold;
-                        } 
+                        }
+                        //Console.WriteLine(row.volatility15Min);
                         dataGridView1.Rows[index].Cells["Column1"].Value = row.name;
                         dataGridView1.Rows[index].Cells["Column2"].Value = Convert.ToDouble(row.min1);
                         dataGridView1.Rows[index].Cells["Column3"].Value = Convert.ToDouble(row.min3);
@@ -74,7 +75,8 @@ namespace ConsoleApplication1
                         dataGridView1.Rows[index].Cells["Column9"].Value = Convert.ToDouble(row.hour2);
                         dataGridView1.Rows[index].Cells["Column10"].Value = Convert.ToDouble(row.hour3);
                         dataGridView1.Rows[index].Cells["Column11"].Value = Convert.ToDouble(row.hour6);
-                        
+                        dataGridView1.Rows[index].Cells["Column12"].Value = Convert.ToDouble(row.volatility15Min);
+
                         if (dataGridView1.SortOrder == SortOrder.Ascending)
                             dataGridView1.Sort(dataGridView1.SortedColumn, ListSortDirection.Ascending);
                         else if(dataGridView1.SortOrder == SortOrder.Descending)
@@ -84,8 +86,8 @@ namespace ConsoleApplication1
                     }
                 }
             }
-            
-            dataGridView1.Rows.Add(row.name, Convert.ToDouble(row.min1), Convert.ToDouble(row.min3), Convert.ToDouble(row.min5), Convert.ToDouble(row.min10), Convert.ToDouble(row.min15), Convert.ToDouble(row.min30), Convert.ToDouble(row.hour1), Convert.ToDouble(row.hour2), Convert.ToDouble(row.hour3), Convert.ToDouble(row.hour6));
+            //Console.WriteLine(row.volatility15Min);
+            dataGridView1.Rows.Add(row.name, Convert.ToDouble(row.min1), Convert.ToDouble(row.min3), Convert.ToDouble(row.min5), Convert.ToDouble(row.min10), Convert.ToDouble(row.min15), Convert.ToDouble(row.min30), Convert.ToDouble(row.hour1), Convert.ToDouble(row.hour2), Convert.ToDouble(row.hour3), Convert.ToDouble(row.hour6), Convert.ToDouble(row.volatility15Min));
             if (dataGridView1.SortOrder == SortOrder.Ascending)
                 dataGridView1.Sort(dataGridView1.SortedColumn, ListSortDirection.Ascending);
             else if (dataGridView1.SortOrder == SortOrder.Descending)
@@ -191,7 +193,7 @@ namespace ConsoleApplication1
                 }
                 Thread.Sleep(Constants.tickerIntervalInMilliSeconds);
                 avgCoin.CalculateChangePercentages();
-                avgCoin.PrintPercentages();
+                avgCoin.PrintData();
             }
         }
 

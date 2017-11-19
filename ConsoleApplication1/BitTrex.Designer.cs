@@ -40,6 +40,7 @@
             this.Column9 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column10 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column11 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column12 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -57,11 +58,13 @@
             this.Column8,
             this.Column9,
             this.Column10,
-            this.Column11});
+            this.Column11,
+            this.Column12});
             this.dataGridView1.Location = new System.Drawing.Point(1, 0);
+            this.dataGridView1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.RowTemplate.Height = 24;
-            this.dataGridView1.Size = new System.Drawing.Size(2653, 1328);
+            this.dataGridView1.Size = new System.Drawing.Size(1990, 1079);
             this.dataGridView1.TabIndex = 0;
             this.dataGridView1.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellContentClick);
             // 
@@ -120,12 +123,18 @@
             this.Column11.HeaderText = "6 Hour";
             this.Column11.Name = "Column11";
             // 
+            // Column12
+            // 
+            this.Column12.HeaderText = "Volatility(15min)";
+            this.Column12.Name = "Column12";
+            // 
             // BitTrex
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(2666, 1385);
+            this.ClientSize = new System.Drawing.Size(2000, 974);
             this.Controls.Add(this.dataGridView1);
+            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.Name = "BitTrex";
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.Form1_Load);
@@ -148,5 +157,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Column9;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column10;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column11;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column12;
     }
 }

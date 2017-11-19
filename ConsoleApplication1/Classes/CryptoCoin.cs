@@ -29,7 +29,7 @@ namespace ConsoleApplication1.Classes
         public Thread thread;
         public double[] data = new double[2170];
         public int currentIndex;
-        public string min1, min3, min5, min10, min15, min30, hour1, hour2, hour3, hour6;
+        public string min1, min3, min5, min10, min15, min30, hour1, hour2, hour3, hour6, volatility15Min;
         private DateTime lastNotifyTime = DateTime.Now;
 
         public void Tick()
@@ -39,7 +39,7 @@ namespace ConsoleApplication1.Classes
             currentIndex = MathHelper.Mod(currentIndex, data.Length);
             currentIndex++;
             CalculateChangePercentages();
-            PrintPercentages();
+            PrintData();
         }
 
         public double GetCoinData()
@@ -98,6 +98,7 @@ namespace ConsoleApplication1.Classes
             Calculate2HourChange();
             Calculate3HourChange();
             Calculate6HourChange();
+            Calculate15MinVolatility();
         }
 
         public double Calculate1MinChange()
@@ -175,11 +176,32 @@ namespace ConsoleApplication1.Classes
             return hour6PercentageDifference;
         }
 
-
-
-        private void PrintPercentages()
+        public void Calculate15MinVolatility()
         {
-            TableDataRow row = new TableDataRow(MarketName, min1, min3, min5, min10, min15, min30, hour1, hour2, hour3, hour6);
+            double volatility = 0;
+
+            for(int i=0;i< Constants.min15InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000); i++)
+            {
+                double delta = 0;
+                if (data[MathHelper.Mod(currentIndex - 1 - i, data.Length)] != 0 && data[MathHelper.Mod(currentIndex - 2 - i, data.Length)] != 0)
+                {
+                    delta = data[currentIndex - 1 - i] / data[currentIndex - 2 - i] * 100;
+                    if (delta != 0 && delta <= 100)
+                        delta = 100 - delta;
+                    else if (delta != 0 && delta > 100)
+                        delta =  delta - 100;
+                    //if(delta != 0)
+                    volatility += delta;
+                }
+            }
+            //Console.WriteLine(volatility15Min);
+            volatility15Min = volatility.ToString("0.00");
+            //return volatility15Min;
+        }
+
+        private void PrintData()
+        {
+            TableDataRow row = new TableDataRow(MarketName, min1, min3, min5, min10, min15, min30, hour1, hour2, hour3, hour6, volatility15Min);
             BitTrex.instance.InsertRow(row);
             /*if (Convert.ToDouble(min1) > 2)
             {
