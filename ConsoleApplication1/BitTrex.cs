@@ -17,7 +17,7 @@ namespace ConsoleApplication1
 {
     public partial class BitTrex : Form
     {
-        const double minimumVolume = 50;
+        const double minimumVolume = 100;
         const string targetMarket = "BTC";
         public Dictionary<string, CryptoCoin> coinList;
         public static BitTrex instance;
