@@ -17,7 +17,7 @@ namespace ConsoleApplication1
 {
     public partial class BitTrex : Form
     {
-        const double minimumVolume = 100;
+        const double minimumVolume = 50;
         const string targetMarket = "BTC";
         public Dictionary<string, CryptoCoin> coinList;
         public static BitTrex instance;
@@ -28,8 +28,6 @@ namespace ConsoleApplication1
         {
             InitializeComponent();
             Initialize();
-            Thread updateCurrenciesThread = new Thread(new ThreadStart(UpdateCurrencies));
-            updateCurrenciesThread.Start();
             Thread updateCoinPricesThread = new Thread(new ThreadStart(UpdateCoinPrices));
             updateCoinPricesThread.Start();
         }
@@ -141,7 +139,7 @@ namespace ConsoleApplication1
             return JsonConvert.DeserializeObject<MarketData>(html);
         }
 
-        private void UpdateCurrencies()
+        /*private void UpdateCurrencies()
         {
             while (true)
             {
@@ -171,7 +169,7 @@ namespace ConsoleApplication1
                 }
                 Thread.Sleep(600000);
             }
-        }
+        }*/
 
         public void RemoveCurrency(string marketName)
         {
@@ -180,20 +178,22 @@ namespace ConsoleApplication1
 
         private void UpdateCoinPrices()
         {
+            
             while (true)
             {
                 Console.WriteLine("Updating coin prices");
-                lock (coinList)
+                MarketData data = GetMarketSummaries();
+                foreach (CryptoCoin coin in data.result)
                 {
-                    foreach (KeyValuePair<string, CryptoCoin> coin  in coinList)
-                    {
-                        Thread coinTick = new Thread(new ThreadStart(coin.Value.Tick));
-                        coinTick.Start();
-                    }
+                    if (!coinList.ContainsKey(coin.MarketName) && coin.BaseVolume > minimumVolume && coin.MarketName.Contains("BTC"))
+                        coinList.Add(coin.MarketName, new CryptoCoin(coin.MarketName));
+                    if (coinList.ContainsKey(coin.MarketName))
+                        coinList[coin.MarketName].Tick(coin.Last);
+
                 }
-                Thread.Sleep(Constants.tickerIntervalInMilliSeconds);
                 avgCoin.CalculateChangePercentages();
                 avgCoin.PrintData();
+                Thread.Sleep(Constants.tickerIntervalInMilliSeconds);
             }
         }
 
