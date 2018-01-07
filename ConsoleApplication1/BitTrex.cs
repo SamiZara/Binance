@@ -17,7 +17,8 @@ namespace ConsoleApplication1
 {
     public partial class BitTrex : Form
     {
-        const double minimumVolume = 50;
+        NotifyIcon notifyIcon;
+        const double minimumVolume = 75;
         const string targetMarket = "BTC";
         public Dictionary<string, CryptoCoin> coinList;
         public static BitTrex instance;
@@ -26,6 +27,7 @@ namespace ConsoleApplication1
 
         public BitTrex()
         {
+            notifyIcon = new NotifyIcon();
             InitializeComponent();
             Initialize();
             Thread updateCoinPricesThread = new Thread(new ThreadStart(UpdateCoinPrices));
@@ -198,8 +200,7 @@ namespace ConsoleApplication1
         }
 
         public void NotifyUser(string message)
-        {
-            NotifyIcon notifyIcon = new NotifyIcon();
+        { 
             notifyIcon.Visible = true;
             notifyIcon.Icon = SystemIcons.Application;
             notifyIcon.BalloonTipText = message;
