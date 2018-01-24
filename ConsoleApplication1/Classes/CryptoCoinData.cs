@@ -8,8 +8,6 @@ namespace ConsoleApplication1.Classes
 {
     public class CryptoCoinData
     {
-        public bool success { get; set; }
-        public string message { get; set; }
-        public CryptoCoinTicker result { get; set; }
+        public List<CryptoCoinTicker> result { get; set; }
     }
 }

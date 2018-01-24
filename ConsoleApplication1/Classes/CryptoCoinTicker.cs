@@ -8,8 +8,7 @@ namespace ConsoleApplication1.Classes
 {
     public class CryptoCoinTicker
     {
-        public float Bid { get; set; }
-        public float Ask { get; set; }
-        public float Last { get; set; }
+        public string symbol { get; set; }
+        public float price { get; set; }
     }
 }

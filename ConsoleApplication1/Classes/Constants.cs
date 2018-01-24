@@ -18,6 +18,6 @@ namespace ConsoleApplication1.Classes
         public const int hour2InSeconds = 7200;
         public const int hour3InSeconds = 10800;
         public const int hour6InSeconds = 21600;
-        public const int tickerIntervalInMilliSeconds = 30000;
+        public const int tickerIntervalInMilliSeconds = 3000;
     }
 }

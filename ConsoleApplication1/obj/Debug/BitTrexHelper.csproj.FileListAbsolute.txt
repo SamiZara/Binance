@@ -7,3 +7,15 @@ C:\Users\sami_\OneDrive\Belgeler\Visual Studio 2015\Projects\ConsoleApplication1
 C:\Users\sami_\OneDrive\Belgeler\Visual Studio 2015\Projects\ConsoleApplication1\ConsoleApplication1\obj\Debug\BitTrexHelper.csproj.GenerateResource.Cache
 C:\Users\sami_\OneDrive\Belgeler\Visual Studio 2015\Projects\ConsoleApplication1\ConsoleApplication1\obj\Debug\ConsoleApplication1.exe
 C:\Users\sami_\OneDrive\Belgeler\Visual Studio 2015\Projects\ConsoleApplication1\ConsoleApplication1\obj\Debug\ConsoleApplication1.pdb
+C:\Users\sami_\OneDrive\Belgeler\Visual Studio 2015\Projects\ConsoleApplication2\ConsoleApplication1\bin\Debug\ConsoleApplication1.exe.config
+C:\Users\sami_\OneDrive\Belgeler\Visual Studio 2015\Projects\ConsoleApplication2\ConsoleApplication1\obj\Debug\ConsoleApplication1.exe
+C:\Users\sami_\OneDrive\Belgeler\Visual Studio 2015\Projects\ConsoleApplication2\ConsoleApplication1\obj\Debug\ConsoleApplication1.pdb
+C:\Users\sami_\OneDrive\Belgeler\Visual Studio 2015\Projects\Binance\ConsoleApplication1\bin\Debug\ConsoleApplication1.exe.config
+C:\Users\sami_\OneDrive\Belgeler\Visual Studio 2015\Projects\Binance\ConsoleApplication1\obj\Debug\ConsoleApplication1.exe
+C:\Users\sami_\OneDrive\Belgeler\Visual Studio 2015\Projects\Binance\ConsoleApplication1\obj\Debug\ConsoleApplication1.pdb
+C:\Users\sami_\OneDrive\Belgeler\Visual Studio 2015\Projects\Binance\ConsoleApplication1\obj\Debug\BitTrexHelper.csprojResolveAssemblyReference.cache
+C:\Users\sami_\OneDrive\Belgeler\Visual Studio 2015\Projects\Binance\ConsoleApplication1\obj\Debug\ConsoleApplication1.BitTrex.resources
+C:\Users\sami_\OneDrive\Belgeler\Visual Studio 2015\Projects\Binance\ConsoleApplication1\obj\Debug\BitTrexHelper.csproj.GenerateResource.Cache
+C:\Users\sami_\OneDrive\Belgeler\Visual Studio 2015\Projects\Binance\ConsoleApplication1\bin\Debug\ConsoleApplication1.exe
+C:\Users\sami_\OneDrive\Belgeler\Visual Studio 2015\Projects\Binance\ConsoleApplication1\bin\Debug\ConsoleApplication1.pdb
+C:\Users\sami_\OneDrive\Belgeler\Visual Studio 2015\Projects\Binance\ConsoleApplication1\bin\Debug\Newtonsoft.Json.dll

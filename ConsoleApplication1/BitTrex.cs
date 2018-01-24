@@ -1,5 +1,6 @@
 ﻿using ConsoleApplication1.Classes;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -17,6 +18,7 @@ namespace ConsoleApplication1
 {
     public partial class BitTrex : Form
     {
+        NotifyIcon notifyIcon;
         const double minimumVolume = 100;
         const string targetMarket = "BTC";
         public Dictionary<string, CryptoCoin> coinList;
@@ -28,10 +30,11 @@ namespace ConsoleApplication1
         {
             InitializeComponent();
             Initialize();
-            Thread updateCurrenciesThread = new Thread(new ThreadStart(UpdateCurrencies));
-            updateCurrenciesThread.Start();
             Thread updateCoinPricesThread = new Thread(new ThreadStart(UpdateCoinPrices));
             updateCoinPricesThread.Start();
+            notifyIcon = new NotifyIcon();
+            notifyIcon.Icon = SystemIcons.Application;
+            notifyIcon.Visible = true;
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -119,60 +122,6 @@ namespace ConsoleApplication1
              Console.WriteLine(html);*/
         }
 
-        public MarketData GetMarketSummaries()
-        {
-            string html = string.Empty;
-            string url = "https://bittrex.com/api/v1.1/public/getmarketsummaries";
-            try
-            {
-                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
-                using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
-                using (Stream stream = response.GetResponseStream())
-                using (StreamReader reader = new StreamReader(stream))
-                {
-                    html = reader.ReadToEnd();
-                }
-            }
-            catch (WebException e)
-            {
-                Console.WriteLine("Timeout ");
-                return GetMarketSummaries();
-            }
-            return JsonConvert.DeserializeObject<MarketData>(html);
-        }
-
-        private void UpdateCurrencies()
-        {
-            while (true)
-            {
-                Console.WriteLine("Updating currencies");
-                MarketData data = GetMarketSummaries();
-                lock (coinList)
-                {
-                    foreach (CryptoCoin coin in data.result)
-                    {
-                        string[] pair = coin.MarketName.Split('-');
-                        if (coin.BaseVolume > minimumVolume && pair[0] == targetMarket)
-                        {
-                            if (!coinList.ContainsKey(coin.MarketName))
-                            {
-                                coinList.Add(coin.MarketName, coin);
-                            }
-                        }
-                        else
-                        {
-                            if (coinList.ContainsKey(coin.MarketName) && coin.BaseVolume < minimumVolume * 0.8f)
-                            {
-                                coinList.Remove(coin.MarketName);
-                            }
-                        }
-                    }
-
-                }
-                Thread.Sleep(600000);
-            }
-        }
-
         public void RemoveCurrency(string marketName)
         {
             coinList.Remove(marketName);
@@ -182,29 +131,57 @@ namespace ConsoleApplication1
         {
             while (true)
             {
-                Console.WriteLine("Updating coin prices");
-                lock (coinList)
+                string html = string.Empty;
+                string url = @"https://api.binance.com//api/v3/ticker/price";
+
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+                using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+                using (Stream stream = response.GetResponseStream())
+                using (StreamReader reader = new StreamReader(stream))
                 {
-                    foreach (KeyValuePair<string, CryptoCoin> coin  in coinList)
-                    {
-                        Thread coinTick = new Thread(new ThreadStart(coin.Value.Tick));
-                        coinTick.Start();
-                    }
+                    html = reader.ReadToEnd();
                 }
-                Thread.Sleep(Constants.tickerIntervalInMilliSeconds);
+                var marketData = JArray.Parse(html);
+
+                Console.WriteLine("Updating coin prices");
+
+                foreach (var coin in marketData)
+                {
+                    //Thread coinTick = new Thread(new ThreadStart(coin.Value.Tick));
+                    //coinTick.Start();
+                    string symbol = coin.ToString().Substring(16, coin.ToString().Substring(16).IndexOf('"'));
+                    //string j = coin.ToString().Substring(coin.ToString().IndexOf("price") + 9, 10);
+                    float price = float.Parse(coin.ToString().Substring(coin.ToString().IndexOf("price")+9, 10).Replace('.',','));
+                    //foreach (string x in coinData)
+                    //{
+                    if (!coinList.ContainsKey(symbol) && (symbol.Contains("BNB") || symbol.Contains("BTC")))  
+                    {
+                        coinList.Add(symbol, new CryptoCoin(symbol));
+                    }
+                    if(coinList.ContainsKey(symbol))
+                        coinList[symbol].Tick(price);
+
+                    
+                    //}
+                }  
                 avgCoin.CalculateChangePercentages();
                 avgCoin.PrintData();
+                Thread.Sleep(Constants.tickerIntervalInMilliSeconds);
             }
         }
 
         public void NotifyUser(string message)
         {
-            NotifyIcon notifyIcon = new NotifyIcon();
-            notifyIcon.Visible = true;
-            notifyIcon.Icon = SystemIcons.Application;
-            notifyIcon.BalloonTipText = message;
-            notifyIcon.ShowBalloonTip(10000);
+            try
+            {
+                notifyIcon.BalloonTipText = message;
+                notifyIcon.ShowBalloonTip(10000);     
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+                NotifyUser(message);
+            }
         }
-
     }
 }

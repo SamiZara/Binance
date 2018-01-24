@@ -55,14 +55,13 @@
     <Compile Include="Classes\Constants.cs" />
     <Compile Include="Classes\CryptoCoin.cs" />
     <Compile Include="Classes\CryptoCoinData.cs" />
-    <Compile Include="Classes\CryptoCoinTicker.cs" />
-    <Compile Include="Classes\MarketData.cs" />
     <Compile Include="BitTrex.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="BitTrex.Designer.cs">
       <DependentUpon>BitTrex.cs</DependentUpon>
     </Compile>
+    <Compile Include="Classes\CryptoCoinTicker.cs" />
     <Compile Include="Classes\MathHelper.cs" />
     <Compile Include="Classes\TableDataRow.cs" />
     <Compile Include="Program.cs" />

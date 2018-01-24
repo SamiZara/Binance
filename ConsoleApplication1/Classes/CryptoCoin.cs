@@ -12,78 +12,25 @@ namespace ConsoleApplication1.Classes
 {
     public class CryptoCoin
     {
-        public string MarketName { get; set; }
-        public double High { get; set; }
-        public double Low { get; set; }
-        public double Volume { get; set; }
+        public string Symbol { get; set; }
         public double Last { get; set; }
-        public double BaseVolume { get; set; }
-        public string TimeStamp { get; set; }
-        public double Bid { get; set; }
-        public double Ask { get; set; }
-        public string OpenBuyOrders { get; set; }
-        public string OpenSellOrders { get; set; }
-        public string PrevDay { get; set; }
-        public string Created { get; set; }
-        public string MarketDisplayMarketNameName { get; set; }
-        public Thread thread;
-        public double[] data = new double[2170];
+        public double[] data = new double[6 * 60 * 60 / (Constants.tickerIntervalInMilliSeconds / 1000)];
         public int currentIndex;
         public string min1, min3, min5, min10, min15, min30, hour1, hour2, hour3, hour6, volatility15Min;
         private DateTime lastNotifyTime = DateTime.Now;
 
-        public void Tick()
+        public CryptoCoin(string symbol)
         {
-            double lastPrice = GetCoinData();
+            Symbol = symbol;
+        }
+
+        public void Tick(float lastPrice)
+        {
             data[MathHelper.Mod(currentIndex, data.Length)] = lastPrice;
             currentIndex = MathHelper.Mod(currentIndex, data.Length);
             currentIndex++;
             CalculateChangePercentages();
             PrintData();
-        }
-
-        public double GetCoinData()
-        {
-            string html = string.Empty;
-
-            string url = "https://bittrex.com/api/v1.1/public/getticker?market=" + MarketName + "";
-            try
-            {
-                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
-                using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
-                using (Stream stream = response.GetResponseStream())
-                using (StreamReader reader = new StreamReader(stream))
-                {
-                    html = reader.ReadToEnd();
-                }
-            }
-            catch (WebException e)
-            {
-                Console.WriteLine("Timeout ");
-            }
-            //Console.WriteLine(html);
-            try
-            {
-                if (html == "" || html == null)
-                {
-                    Console.WriteLine("Failed to gather data");
-                    return 0;
-                }
-                CryptoCoinData data = JsonConvert.DeserializeObject<CryptoCoinData>(html);
-                if (data.result != null)
-                    return data.result.Last;
-                else
-                {
-                    Console.WriteLine("Failed to read: " + MarketName);
-                    BitTrex.instance.RemoveCurrency(MarketName);
-                    return 0;
-                }
-            }
-            catch (JsonSerializationException e)
-            {
-                Console.WriteLine("Cannot serialize");
-                return double.MinValue;
-            }
         }
 
         private void CalculateChangePercentages()
@@ -105,10 +52,15 @@ namespace ConsoleApplication1.Classes
         {
             double min1PercentageDifference = ((data[currentIndex - 1] - data[(MathHelper.Mod(currentIndex - 1 - (Constants.min1InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000)), data.Length))]) / data[(MathHelper.Mod(currentIndex - 1 - (Constants.min1InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000)), data.Length))] * 100);
             min1 = ((data[currentIndex - 1] - data[(MathHelper.Mod(currentIndex - 1 - (Constants.min1InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000)), data.Length))]) / data[(MathHelper.Mod(currentIndex - 1 - (Constants.min1InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000)), data.Length))] * 100).ToString("0.00");
-            if(min1PercentageDifference > 5 && data[currentIndex - 1] > 0.00000100 && min1PercentageDifference < 200 && DateTime.Now >= lastNotifyTime.AddMinutes(2))
+            if((min1PercentageDifference > 10 && Symbol.Contains("BNB") || (min1PercentageDifference > 5 && Symbol.Contains("BTC"))) && data[currentIndex - 1] > 0.00000100 && min1PercentageDifference < 200 && DateTime.Now >= lastNotifyTime.AddMinutes(2))
             {
                 lastNotifyTime = DateTime.Now;
-                BitTrex.instance.NotifyUser(MarketName + " is increased " + min1PercentageDifference + " in 1 min");
+                BitTrex.instance.NotifyUser(Symbol + " is increased " + min1PercentageDifference + " in 1 min");
+            }
+            else if((min1PercentageDifference < -10 && Symbol.Contains("BNB") || (min1PercentageDifference < -5 && Symbol.Contains("BTC"))) && data[currentIndex - 1] > 0.00000100 && min1PercentageDifference > -50 && DateTime.Now >= lastNotifyTime.AddMinutes(2))
+            {
+                lastNotifyTime = DateTime.Now;
+                BitTrex.instance.NotifyUser(Symbol + " is decreased " + min1PercentageDifference + " in 1 min");
             }
             return min1PercentageDifference;
         }
@@ -117,6 +69,16 @@ namespace ConsoleApplication1.Classes
         {
             double min3PercentageDifference = ((data[currentIndex - 1] - data[(MathHelper.Mod(currentIndex - 1 - (Constants.min3InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000)), data.Length))]) / data[(MathHelper.Mod(currentIndex - 1 - (Constants.min3InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000)), data.Length))] * 100);
             min3 = ((data[currentIndex - 1] - data[(MathHelper.Mod(currentIndex - 1 - (Constants.min3InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000)), data.Length))]) / data[(MathHelper.Mod(currentIndex - 1 - (Constants.min3InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000)), data.Length))] * 100).ToString("0.00");
+            if ((min3PercentageDifference > 20 && Symbol.Contains("BNB") || (min3PercentageDifference > 10 && Symbol.Contains("BTC"))) && data[currentIndex - 1] > 0.00000100 && min3PercentageDifference < 200 && DateTime.Now >= lastNotifyTime.AddMinutes(2))
+            {
+                lastNotifyTime = DateTime.Now;
+                BitTrex.instance.NotifyUser(Symbol + " is increased " + min3PercentageDifference + " in 3 min");
+            }
+            else if ((min3PercentageDifference < -20 && Symbol.Contains("BNB") || (min3PercentageDifference <- 10 && Symbol.Contains("BTC"))) && data[currentIndex - 1] > 0.00000100 && min3PercentageDifference > -50 && DateTime.Now >= lastNotifyTime.AddMinutes(2))
+            {
+                lastNotifyTime = DateTime.Now;
+                BitTrex.instance.NotifyUser(Symbol + " is decreased " + min3PercentageDifference + " in 3 min");
+            }
             return min3PercentageDifference;
         }
 
@@ -201,7 +163,7 @@ namespace ConsoleApplication1.Classes
 
         private void PrintData()
         {
-            TableDataRow row = new TableDataRow(MarketName, min1, min3, min5, min10, min15, min30, hour1, hour2, hour3, hour6, volatility15Min);
+            TableDataRow row = new TableDataRow(Symbol, min1, min3, min5, min10, min15, min30, hour1, hour2, hour3, hour6, volatility15Min);
             BitTrex.instance.InsertRow(row);
             /*if (Convert.ToDouble(min1) > 2)
             {
