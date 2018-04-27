@@ -25,6 +25,7 @@ namespace ConsoleApplication1
         public static BitTrex instance;
         public delegate void AddRowDelegate(TableDataRow row);
         private AverageCryptoCoin avgCoin;
+        public DateTime programStartTime;
 
         public BitTrex()
         {
@@ -35,6 +36,7 @@ namespace ConsoleApplication1
             notifyIcon = new NotifyIcon();
             notifyIcon.Icon = SystemIcons.Application;
             notifyIcon.Visible = true;
+            programStartTime = DateTime.Now;
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -132,8 +134,9 @@ namespace ConsoleApplication1
             while (true)
             {
                 string html = string.Empty;
-                string url = @"https://api.binance.com//api/v3/ticker/price";
-
+                string url = @"https://api.binance.com/api/v3/ticker/price";
+                ServicePointManager.Expect100Continue = true;
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
                 HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
                 using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
                 using (Stream stream = response.GetResponseStream())
@@ -154,9 +157,13 @@ namespace ConsoleApplication1
                     float price = float.Parse(coin.ToString().Substring(coin.ToString().IndexOf("price")+9, 10).Replace('.',','));
                     //foreach (string x in coinData)
                     //{
-                    if (!coinList.ContainsKey(symbol) && (symbol.Contains("BNB") || symbol.Contains("BTC")))  
+                    if (!coinList.ContainsKey(symbol))  //&& (symbol.Contains("BNB") || symbol.Contains("BTC"))
                     {
                         coinList.Add(symbol, new CryptoCoin(symbol));
+                        if((DateTime.Now-programStartTime).TotalMinutes > 1)
+                        {
+                            NotifyUserNewCoin(symbol + " New coin mofo be fast");
+                        }
                     }
                     if(coinList.ContainsKey(symbol))
                         coinList[symbol].Tick(price);
@@ -176,6 +183,21 @@ namespace ConsoleApplication1
             {
                 notifyIcon.BalloonTipText = message;
                 notifyIcon.ShowBalloonTip(10000);     
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+                NotifyUser(message);
+            }
+        }
+
+        public void NotifyUserNewCoin(string message)
+        {
+            try
+            {
+                notifyIcon.BalloonTipText = message;
+                notifyIcon.ShowBalloonTip(100000);
+                System.Media.SystemSounds.Hand.Play();
             }
             catch (Exception e)
             {

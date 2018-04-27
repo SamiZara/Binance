@@ -18,19 +18,32 @@ namespace ConsoleApplication1.Classes
         public int currentIndex;
         public string min1, min3, min5, min10, min15, min30, hour1, hour2, hour3, hour6, volatility15Min;
         private DateTime lastNotifyTime = DateTime.Now;
+        public static double bnbPrice;
+        private bool isBnb;
 
         public CryptoCoin(string symbol)
         {
             Symbol = symbol;
+            if(Symbol == "BNBBTC")
+            {
+                isBnb = true;
+            }
         }
 
         public void Tick(float lastPrice)
         {
             data[MathHelper.Mod(currentIndex, data.Length)] = lastPrice;
+            if (isBnb)
+                bnbPrice = lastPrice;
             currentIndex = MathHelper.Mod(currentIndex, data.Length);
             currentIndex++;
             CalculateChangePercentages();
             PrintData();
+        }
+
+        public void CheckOrderBook()
+        {
+
         }
 
         private void CalculateChangePercentages()
@@ -52,12 +65,12 @@ namespace ConsoleApplication1.Classes
         {
             double min1PercentageDifference = ((data[currentIndex - 1] - data[(MathHelper.Mod(currentIndex - 1 - (Constants.min1InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000)), data.Length))]) / data[(MathHelper.Mod(currentIndex - 1 - (Constants.min1InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000)), data.Length))] * 100);
             min1 = ((data[currentIndex - 1] - data[(MathHelper.Mod(currentIndex - 1 - (Constants.min1InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000)), data.Length))]) / data[(MathHelper.Mod(currentIndex - 1 - (Constants.min1InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000)), data.Length))] * 100).ToString("0.00");
-            if((min1PercentageDifference > 10 && Symbol.Contains("BNB") || (min1PercentageDifference > 5 && Symbol.Contains("BTC"))) && data[currentIndex - 1] > 0.00000100 && min1PercentageDifference < 200 && DateTime.Now >= lastNotifyTime.AddMinutes(2))
+            if((min1PercentageDifference > 10 || (min1PercentageDifference > 5 )) && data[currentIndex - 1] > 0.00000100 && min1PercentageDifference < 200 && DateTime.Now >= lastNotifyTime.AddMinutes(2))
             {
                 lastNotifyTime = DateTime.Now;
                 BitTrex.instance.NotifyUser(Symbol + " is increased " + min1PercentageDifference + " in 1 min");
             }
-            else if((min1PercentageDifference < -10 && Symbol.Contains("BNB") || (min1PercentageDifference < -5 && Symbol.Contains("BTC"))) && data[currentIndex - 1] > 0.00000100 && min1PercentageDifference > -50 && DateTime.Now >= lastNotifyTime.AddMinutes(2))
+            else if((min1PercentageDifference < -10  || (min1PercentageDifference < -5 )) && data[currentIndex - 1] > 0.00000100 && min1PercentageDifference > -50 && DateTime.Now >= lastNotifyTime.AddMinutes(2))
             {
                 lastNotifyTime = DateTime.Now;
                 BitTrex.instance.NotifyUser(Symbol + " is decreased " + min1PercentageDifference + " in 1 min");
@@ -69,12 +82,12 @@ namespace ConsoleApplication1.Classes
         {
             double min3PercentageDifference = ((data[currentIndex - 1] - data[(MathHelper.Mod(currentIndex - 1 - (Constants.min3InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000)), data.Length))]) / data[(MathHelper.Mod(currentIndex - 1 - (Constants.min3InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000)), data.Length))] * 100);
             min3 = ((data[currentIndex - 1] - data[(MathHelper.Mod(currentIndex - 1 - (Constants.min3InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000)), data.Length))]) / data[(MathHelper.Mod(currentIndex - 1 - (Constants.min3InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000)), data.Length))] * 100).ToString("0.00");
-            if ((min3PercentageDifference > 20 && Symbol.Contains("BNB") || (min3PercentageDifference > 10 && Symbol.Contains("BTC"))) && data[currentIndex - 1] > 0.00000100 && min3PercentageDifference < 200 && DateTime.Now >= lastNotifyTime.AddMinutes(2))
+            if ((min3PercentageDifference > 20 || (min3PercentageDifference > 10 )) && data[currentIndex - 1] > 0.00000100 && min3PercentageDifference < 200 && DateTime.Now >= lastNotifyTime.AddMinutes(2))
             {
                 lastNotifyTime = DateTime.Now;
                 BitTrex.instance.NotifyUser(Symbol + " is increased " + min3PercentageDifference + " in 3 min");
             }
-            else if ((min3PercentageDifference < -20 && Symbol.Contains("BNB") || (min3PercentageDifference <- 10 && Symbol.Contains("BTC"))) && data[currentIndex - 1] > 0.00000100 && min3PercentageDifference > -50 && DateTime.Now >= lastNotifyTime.AddMinutes(2))
+            else if ((min3PercentageDifference < -20 || (min3PercentageDifference <- 10 )) && data[currentIndex - 1] > 0.00000100 && min3PercentageDifference > -50 && DateTime.Now >= lastNotifyTime.AddMinutes(2))
             {
                 lastNotifyTime = DateTime.Now;
                 BitTrex.instance.NotifyUser(Symbol + " is decreased " + min3PercentageDifference + " in 3 min");
@@ -142,12 +155,12 @@ namespace ConsoleApplication1.Classes
         {
             double volatility = 0;
 
-            for(int i=0;i< Constants.min15InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000); i++)
+            for(int i=0;i< Constants.min1InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000); i++)
             {
                 double delta = 0;
                 if (data[MathHelper.Mod(currentIndex - 1 - i, data.Length)] != 0 && data[MathHelper.Mod(currentIndex - 2 - i, data.Length)] != 0)
                 {
-                    delta = data[currentIndex - 1 - i] / data[currentIndex - 2 - i] * 100;
+                    delta = data[MathHelper.Mod(currentIndex - 1 - i,data.Length)] / data[MathHelper.Mod(currentIndex - 2 - i,data.Length)] * 100;
                     if (delta != 0 && delta <= 100)
                         delta = 100 - delta;
                     else if (delta != 0 && delta > 100)
