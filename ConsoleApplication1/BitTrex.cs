@@ -19,7 +19,11 @@ namespace ConsoleApplication1
     public partial class BitTrex : Form
     {
         NotifyIcon notifyIcon;
+<<<<<<< HEAD
         const double minimumVolume = 100;
+=======
+        const double minimumVolume = 75;
+>>>>>>> c95dda699cdb89eccca9a5fb07e0673f64363ede
         const string targetMarket = "BTC";
         public Dictionary<string, CryptoCoin> coinList;
         public static BitTrex instance;
@@ -29,6 +33,7 @@ namespace ConsoleApplication1
 
         public BitTrex()
         {
+            notifyIcon = new NotifyIcon();
             InitializeComponent();
             Initialize();
             Thread updateCoinPricesThread = new Thread(new ThreadStart(UpdateCoinPrices));
@@ -146,8 +151,18 @@ namespace ConsoleApplication1
                 }
                 var marketData = JArray.Parse(html);
 
+<<<<<<< HEAD
 
                 foreach (var coin in marketData)
+=======
+        /*private void UpdateCurrencies()
+        {
+            while (true)
+            {
+                Console.WriteLine("Updating currencies");
+                MarketData data = GetMarketSummaries();
+                lock (coinList)
+>>>>>>> c95dda699cdb89eccca9a5fb07e0673f64363ede
                 {
                     //Thread coinTick = new Thread(new ThreadStart(coin.Value.Tick));
                     //coinTick.Start();
@@ -174,10 +189,11 @@ namespace ConsoleApplication1
                 avgCoin.PrintData();
                 Thread.Sleep(Constants.tickerIntervalInMilliSeconds);
             }
-        }
+        }*/
 
         public void NotifyUser(string message)
         {
+<<<<<<< HEAD
             try
             {
                 notifyIcon.BalloonTipText = message;
@@ -203,6 +219,33 @@ namespace ConsoleApplication1
                 Console.WriteLine(e.ToString());
                 NotifyUser(message);
             }
+=======
+            
+            while (true)
+            {
+                Console.WriteLine("Updating coin prices");
+                MarketData data = GetMarketSummaries();
+                foreach (CryptoCoin coin in data.result)
+                {
+                    if (!coinList.ContainsKey(coin.MarketName) && coin.BaseVolume > minimumVolume && coin.MarketName.Contains("BTC"))
+                        coinList.Add(coin.MarketName, new CryptoCoin(coin.MarketName));
+                    if (coinList.ContainsKey(coin.MarketName))
+                        coinList[coin.MarketName].Tick(coin.Last);
+
+                }
+                avgCoin.CalculateChangePercentages();
+                avgCoin.PrintData();
+                Thread.Sleep(Constants.tickerIntervalInMilliSeconds);
+            }
+        }
+
+        public void NotifyUser(string message)
+        { 
+            notifyIcon.Visible = true;
+            notifyIcon.Icon = SystemIcons.Application;
+            notifyIcon.BalloonTipText = message;
+            notifyIcon.ShowBalloonTip(10000);
+>>>>>>> c95dda699cdb89eccca9a5fb07e0673f64363ede
         }
     }
 }

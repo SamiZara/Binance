@@ -14,13 +14,28 @@ namespace ConsoleApplication1.Classes
     {
         public string Symbol { get; set; }
         public double Last { get; set; }
+<<<<<<< HEAD
         public double[] data = new double[6 * 60 * 60 / (Constants.tickerIntervalInMilliSeconds / 1000)];
+=======
+        public double BaseVolume { get; set; }
+        public string TimeStamp { get; set; }
+        public double Bid { get; set; }
+        public double Ask { get; set; }
+        public string OpenBuyOrders { get; set; }
+        public string OpenSellOrders { get; set; }
+        public string PrevDay { get; set; }
+        public string Created { get; set; }
+        public string MarketDisplayMarketNameName { get; set; }
+        public Thread thread;
+        public double[] data = new double[ 6 * 60 * 60 / (Constants.tickerIntervalInMilliSeconds / 1000)];
+>>>>>>> c95dda699cdb89eccca9a5fb07e0673f64363ede
         public int currentIndex;
         public string min1, min3, min5, min10, min15, min30, hour1, hour2, hour3, hour6, volatility15Min;
         private DateTime lastNotifyTime = DateTime.Now;
         public static double bnbPrice;
         private bool isBnb;
 
+<<<<<<< HEAD
         public CryptoCoin(string symbol)
         {
             Symbol = symbol;
@@ -31,6 +46,14 @@ namespace ConsoleApplication1.Classes
         }
 
         public void Tick(float lastPrice)
+=======
+        public CryptoCoin(string MarketName)
+        {
+            this.MarketName = MarketName;
+        }
+
+        public void Tick(double lastPrice)
+>>>>>>> c95dda699cdb89eccca9a5fb07e0673f64363ede
         {
             data[MathHelper.Mod(currentIndex, data.Length)] = lastPrice;
             if (isBnb)
@@ -41,10 +64,56 @@ namespace ConsoleApplication1.Classes
             PrintData();
         }
 
+<<<<<<< HEAD
         public void CheckOrderBook()
+=======
+        /*public double GetCoinData()
+>>>>>>> c95dda699cdb89eccca9a5fb07e0673f64363ede
         {
 
+<<<<<<< HEAD
         }
+=======
+            string url = "https://bittrex.com/api/v1.1/public/getticker?market=" + MarketName + "";
+            try
+            {
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+                using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+                using (Stream stream = response.GetResponseStream())
+                using (StreamReader reader = new StreamReader(stream))
+                {
+                    html = reader.ReadToEnd();
+                }
+            }
+            catch (WebException e)
+            {
+                Console.WriteLine("Timeout ");
+            }
+            //Console.WriteLine(html);
+            try
+            {
+                if (html == "" || html == null)
+                {
+                    Console.WriteLine("Failed to gather data");
+                    return 0;
+                }
+                CryptoCoinData data = JsonConvert.DeserializeObject<CryptoCoinData>(html);
+                if (data.result != null)
+                    return data.result.Last;
+                else
+                {
+                    Console.WriteLine("Failed to read: " + MarketName);
+                    BitTrex.instance.RemoveCurrency(MarketName);
+                    return 0;
+                }
+            }
+            catch (JsonSerializationException e)
+            {
+                Console.WriteLine("Cannot serialize");
+                return double.MinValue;
+            }
+        }*/
+>>>>>>> c95dda699cdb89eccca9a5fb07e0673f64363ede
 
         private void CalculateChangePercentages()
         {
@@ -75,6 +144,11 @@ namespace ConsoleApplication1.Classes
                 lastNotifyTime = DateTime.Now;
                 BitTrex.instance.NotifyUser(Symbol + " is decreased " + min1PercentageDifference + " in 1 min");
             }
+            else if(min1PercentageDifference < -5 && data[currentIndex - 1] > 0.00000100 && min1PercentageDifference > -50 && DateTime.Now >= lastNotifyTime.AddMinutes(2))
+            {
+                lastNotifyTime = DateTime.Now;
+                BitTrex.instance.NotifyUser(MarketName + " is decreased " + min1PercentageDifference + " in 1 min");
+            }
             return min1PercentageDifference;
         }
 
@@ -82,6 +156,7 @@ namespace ConsoleApplication1.Classes
         {
             double min3PercentageDifference = ((data[currentIndex - 1] - data[(MathHelper.Mod(currentIndex - 1 - (Constants.min3InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000)), data.Length))]) / data[(MathHelper.Mod(currentIndex - 1 - (Constants.min3InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000)), data.Length))] * 100);
             min3 = ((data[currentIndex - 1] - data[(MathHelper.Mod(currentIndex - 1 - (Constants.min3InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000)), data.Length))]) / data[(MathHelper.Mod(currentIndex - 1 - (Constants.min3InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000)), data.Length))] * 100).ToString("0.00");
+<<<<<<< HEAD
             if ((min3PercentageDifference > 20 || (min3PercentageDifference > 10 )) && data[currentIndex - 1] > 0.00000100 && min3PercentageDifference < 200 && DateTime.Now >= lastNotifyTime.AddMinutes(2))
             {
                 lastNotifyTime = DateTime.Now;
@@ -91,6 +166,17 @@ namespace ConsoleApplication1.Classes
             {
                 lastNotifyTime = DateTime.Now;
                 BitTrex.instance.NotifyUser(Symbol + " is decreased " + min3PercentageDifference + " in 3 min");
+=======
+            if (min3PercentageDifference > 10 && data[currentIndex - 1] > 0.00000100 && min3PercentageDifference < 200 && DateTime.Now >= lastNotifyTime.AddMinutes(2))
+            {
+                lastNotifyTime = DateTime.Now;
+                BitTrex.instance.NotifyUser(MarketName + " is increased " + min3PercentageDifference + " in 3 min");
+            }
+            else if (min3PercentageDifference < -10 && data[currentIndex - 1] > 0.00000100 && min3PercentageDifference > -50 && DateTime.Now >= lastNotifyTime.AddMinutes(2))
+            {
+                lastNotifyTime = DateTime.Now;
+                BitTrex.instance.NotifyUser(MarketName + " is decreased " + min3PercentageDifference + " in 3 min");
+>>>>>>> c95dda699cdb89eccca9a5fb07e0673f64363ede
             }
             return min3PercentageDifference;
         }
