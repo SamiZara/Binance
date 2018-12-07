@@ -146,7 +146,6 @@ namespace ConsoleApplication1
                 }
                 var marketData = JArray.Parse(html);
 
-                Console.WriteLine("Updating coin prices");
 
                 foreach (var coin in marketData)
                 {

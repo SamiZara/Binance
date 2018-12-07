@@ -19,3 +19,4 @@ C:\Users\sami_\OneDrive\Belgeler\Visual Studio 2015\Projects\Binance\ConsoleAppl
 C:\Users\sami_\OneDrive\Belgeler\Visual Studio 2015\Projects\Binance\ConsoleApplication1\bin\Debug\ConsoleApplication1.exe
 C:\Users\sami_\OneDrive\Belgeler\Visual Studio 2015\Projects\Binance\ConsoleApplication1\bin\Debug\ConsoleApplication1.pdb
 C:\Users\sami_\OneDrive\Belgeler\Visual Studio 2015\Projects\Binance\ConsoleApplication1\bin\Debug\Newtonsoft.Json.dll
+C:\Users\sami_\OneDrive\Belgeler\Visual Studio 2015\Projects\Binance\ConsoleApplication1\obj\Debug\BitTrexHelper.csproj.CoreCompileInputs.cache

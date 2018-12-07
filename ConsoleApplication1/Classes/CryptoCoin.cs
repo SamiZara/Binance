@@ -65,7 +65,7 @@ namespace ConsoleApplication1.Classes
         {
             double min1PercentageDifference = ((data[currentIndex - 1] - data[(MathHelper.Mod(currentIndex - 1 - (Constants.min1InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000)), data.Length))]) / data[(MathHelper.Mod(currentIndex - 1 - (Constants.min1InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000)), data.Length))] * 100);
             min1 = ((data[currentIndex - 1] - data[(MathHelper.Mod(currentIndex - 1 - (Constants.min1InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000)), data.Length))]) / data[(MathHelper.Mod(currentIndex - 1 - (Constants.min1InSeconds / (Constants.tickerIntervalInMilliSeconds / 1000)), data.Length))] * 100).ToString("0.00");
-            if((min1PercentageDifference > 10 || (min1PercentageDifference > 5 )) && data[currentIndex - 1] > 0.00000100 && min1PercentageDifference < 200 && DateTime.Now >= lastNotifyTime.AddMinutes(2))
+            if((min1PercentageDifference > 10 || (min1PercentageDifference > 3 )) && data[currentIndex - 1] > 0.00000100 && min1PercentageDifference < 200 && DateTime.Now >= lastNotifyTime.AddMinutes(2))
             {
                 lastNotifyTime = DateTime.Now;
                 BitTrex.instance.NotifyUser(Symbol + " is increased " + min1PercentageDifference + " in 1 min");
